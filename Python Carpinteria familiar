@@ -1,11 +1,6 @@
 
 #SIMULACION DE UN PROGRAMA PARA UNA CARPINTERIA FAMILIAR DONDE SE CARGAN Y SE VALIDAN DATOS PARA MAS ADELANTE ORGANIZARLOS POR TRIMESTRE Y DAR INFORME FINAL
 
-from com_E_Maiori import validar_info_trim, mostrar_datos_pedido
-from com_E_Acosta import validar_entero, validar_info_anio
-from com_E_Caruso import validar_fecha
-from com_E_Espinoza import es_bisiesto, dias_del_mes
-
 def main():
     print("Bienvenido al sistema de pedidos de la carpintería 'Invención de Morel'\n")
 

@@ -1,0 +1,140 @@
+
+#SIMULACION DE UN PROGRAMA PARA UNA CARPINTERIA FAMILIAR DONDE SE CARGAN Y SE VALIDAN DATOS PARA MAS ADELANTE ORGANIZARLOS POR TRIMESTRE Y DAR INFORME FINAL
+
+from com_E_Maiori import validar_info_trim, mostrar_datos_pedido
+from com_E_Acosta import validar_entero, validar_info_anio
+from com_E_Caruso import validar_fecha
+from com_E_Espinoza import es_bisiesto, dias_del_mes
+
+def main():
+    print("Bienvenido al sistema de pedidos de la carpintería 'Invención de Morel'\n")
+
+    info_anio = validar_info_anio()
+    print("[DEBUG] Año ingresado:", info_anio)
+
+    info_trim = validar_info_trim()
+    print("[DEBUG] Trimestre ingresado:", info_trim)
+
+    cant_tot_pedidos = 0
+    total_ventas_trim = 0
+    cant_tot_unidades = 0
+    mayor_precio = 0
+
+    empresa = input("Ingrese nombre de la empresa (o '*' para finalizar): ")
+
+    while empresa != '*':
+        print("[DEBUG] Empresa ingresada:", empresa)
+
+        cant_tot_pedidos = cant_tot_pedidos + 1
+        print("[DEBUG] Total de pedidos:", cant_tot_pedidos)
+
+        dia, mes, anio = validar_fecha(info_anio, info_trim)
+        print("[DEBUG] Fecha validada: ",dia,"/",mes,"/",anio)
+
+        producto = input("Ingrese la descripción del producto: ")
+        print("[DEBUG] Producto ingresado:", producto)
+
+        cant_unid = validar_entero("Ingrese cantidad de unidades (1 a 999): ", 1, 999)
+        print("[DEBUG] Cantidad de unidades:", cant_unid)
+
+        cant_tot_unidades = cant_tot_unidades + cant_unid
+        print("[DEBUG] Total acumulado de unidades:", cant_tot_unidades)
+
+        monto_vta = validar_entero("Ingrese el monto de venta (mayor a 9999): ", 10000, 999999999)
+        print("[DEBUG] Monto de venta ingresado:", monto_vta)
+
+        total_ventas_trim = total_ventas_trim+monto_vta
+        print("[DEBUG] Total acumulado de ventas:", total_ventas_trim)
+
+        precio_unitario = monto_vta / cant_unid
+        print("[DEBUG] Precio unitario calculado:", precio_unitario)
+
+        if precio_unitario > mayor_precio:
+            mayor_precio = precio_unitario
+            print("[DEBUG] Nuevo mayor precio unitario registrado:", mayor_precio)
+
+        mostrar_datos_pedido(empresa, dia, mes, anio, producto, cant_unid, monto_vta, precio_unitario)
+
+        empresa = input("Ingrese otra empresa (o '*' para finalizar): ")
+
+    print("===== INFORME FINAL =====")
+    print("Trimestre:", info_trim, "Año:", info_anio)
+    print("Cantidad total de pedidos:", cant_tot_pedidos)
+    print("Monto total de ventas del trimestre: $", total_ventas_trim)
+    print("Cantidad total de unidades vendidas:", cant_tot_unidades)
+    print("Mayor precio unitario registrado: $", mayor_precio)
+    print("==========================")
+
+from com_E_Espinoza import dias_del_mes
+
+def validar_fecha(info_anio, info_trim):
+    meses_validos = {
+        1: [1, 2, 3],
+        2: [4, 5, 6],
+        3: [7, 8, 9],
+        4: [10, 11, 12]
+    }
+
+    fecha_valida = False
+
+    while not fecha_valida:
+        dia_str = input("Ingrese el día del pedido: ")
+        mes_str = input("Ingrese el mes del pedido: ")
+        anio_str = input("Ingrese el año del pedido: ")
+
+        if dia_str.isdigit() and mes_str.isdigit() and anio_str.isdigit():
+            dia = int(dia_str)
+            mes = int(mes_str)
+            anio = int(anio_str)
+
+            if anio == info_anio and mes in meses_validos[info_trim]:
+                if 1 <= dia <= dias_del_mes(mes, anio):
+                    fecha_valida = True
+                else:
+                    print("Día inválido para el mes.")
+            else:
+                print("Fecha incoherente con el trimestre o año del informe.")
+        else:
+            print("Todos los valores deben ser números enteros.")
+
+    return dia, mes, anio
+
+
+def validar_info_anio():
+    info_anio = input("Ingrese el año del informe (2024 a 2027): ")
+    while not (info_anio.isdigit() and 2023 < int(info_anio) < 2028):
+        info_anio = input("Año inválido. Reingrese (2024 a 2027): ")
+    return int(info_anio)
+
+def validar_entero(mensaje, minimo, maximo):
+    valor_str = input(mensaje)
+    while not (valor_str.isdigit() and minimo <= int(valor_str) <= maximo):
+        valor_str = input("Valor inválido. Reingrese: ")
+    return int(valor_str)
+def validar_info_trim():
+    info_trim = input("Ingrese el número de trimestre (1 a 4): ")
+    while not (info_trim.isdigit() and 1 <= int(info_trim) <= 4):
+        info_trim = input("Trimestre inválido. Reingrese (1 a 4): ")
+    return int(info_trim)
+
+def mostrar_datos_pedido(empresa, dia, mes, anio, produc, cant_unid, monto_vta, precio_uni):
+    print("--- Datos del Pedido Ingresado ---")
+    print("Empresa:", empresa)
+    print("Fecha del pedido:", dia, "/", mes, "/", anio)
+    print("Producto:", produc)
+    print("Cantidad de unidades:", cant_unid)
+    print("Monto presupuestado: $", monto_vta)
+    print("Precio unitario: $", precio_uni)
+    print("----------------------------------\n")
+
+
+def es_bisiesto(anio):
+    return (anio % 4 == 0 and anio % 100 != 0) or (anio % 400 == 0)
+
+def dias_del_mes(mes, anio):
+    if mes == 2:
+        return 29 if es_bisiesto(anio) else 28
+    elif mes in [4, 6, 9, 11]:
+        return 30
+    else:
+        return 31
